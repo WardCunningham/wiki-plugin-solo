@@ -1,0 +1,37 @@
+{
+  "title": "About Solo Plugin",
+  "story": [
+  {
+    "type": "paragraph",
+    "id": "鋌0艰鄀43砤茬1噜",
+    "text": "Here we describe the purpose of the plugin and include a sample."
+  },
+  {
+    "type": "solo",
+    "id": "4򝩱彘a殍9骅5殂",
+    "text": "This is text in the new plugin. You can *double-click* to edit it too."
+  }
+],
+  "journal": [
+  {
+    "type": "create",
+    "item": {
+      "title": "About Solo Plugin",
+      "story": [
+  {
+    "type": "paragraph",
+    "id": "鋌0艰鄀43砤茬1噜",
+    "text": "Here we describe the purpose of the plugin and include a sample."
+  },
+  {
+    "type": "solo",
+    "id": "4򝩱彘a殍9骅5殂",
+    "text": "This is text in the new plugin. You can *double-click* to edit it too."
+  }
+]
+    },
+    "date": 1710441172000,
+    "certificate": "from mkplugin.sh"
+  }
+]
+}
