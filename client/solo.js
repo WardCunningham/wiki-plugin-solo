@@ -9,12 +9,26 @@
       .replace(/\*(.+?)\*/g, '<i>$1</i>')
   }
 
-  function emit($item, item) {
+  async function emit($item, item) {
+    const testurl = 'https://raw.githubusercontent.com/WardCunningham/search/master/README.graph.jsonl'
+    const testjsonl = await fetch(testurl).then(res => res.text())
+    const names = testjsonl.trim().split(/\n/)
+      .map(line => JSON.parse(line))
+      .map(obj => obj.name)
     return $item.append(`
       <p style="background-color:#eee;padding:15px;">
-        ${expand(item.text)}
+        ${names.join("<br>")}
+      </p><p>
+        <button onclick="window.plugins.solo.dopopup(event)">view in solo</button>
       </p>`)
   }
+
+  const dopopup = event => {
+    console.log('target',event.target)
+    window.open('/plugins/solo/dialog/#','solo','popup,height=600,width=800')
+  }
+
+  // window.plugins.solo.dopopup = popup
 
   function bind($item, item) {
     return $item.dblclick(() => {
@@ -23,7 +37,7 @@
   }
 
   if (typeof window !== "undefined" && window !== null) {
-    window.plugins.solo = {emit, bind}
+    window.plugins.solo = {emit, bind, dopopup}
   }
 
   if (typeof module !== "undefined" && module !== null) {

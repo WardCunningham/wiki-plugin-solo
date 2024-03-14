@@ -3,12 +3,12 @@
   "story": [
   {
     "type": "paragraph",
-    "id": "鋌0艰鄀43砤茬1噜",
+    "id": "0980980909080",
     "text": "Here we describe the purpose of the plugin and include a sample."
   },
   {
     "type": "solo",
-    "id": "4򝩱彘a殍9骅5殂",
+    "id": "76568768768678",
     "text": "This is text in the new plugin. You can *double-click* to edit it too."
   }
 ],
@@ -20,12 +20,12 @@
       "story": [
   {
     "type": "paragraph",
-    "id": "鋌0艰鄀43砤茬1噜",
+    "id": "0980980909080",
     "text": "Here we describe the purpose of the plugin and include a sample."
   },
   {
     "type": "solo",
-    "id": "4򝩱彘a殍9骅5殂",
+    "id": "76568768768678",
     "text": "This is text in the new plugin. You can *double-click* to edit it too."
   }
 ]
