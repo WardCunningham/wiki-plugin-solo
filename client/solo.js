@@ -25,7 +25,7 @@
 
   const dopopup = event => {
     console.log('target',event.target)
-    window.open('/plugins/solo/dialog/#','solo','popup,height=600,width=800')
+    window.open('/plugins/solo/dialog/#','solo','popup,height=720,width=1280')
   }
 
   // window.plugins.solo.dopopup = popup

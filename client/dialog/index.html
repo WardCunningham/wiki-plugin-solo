@@ -1,1 +1,368 @@
-<h1>Watch this Space</h1>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Solo Super Collaborator</title>
+  <link id="favicon" href="/favicon.png" rel="icon" type="image/png" />
+  <link href="/dialog/style.css" rel="stylesheet" />
+  <script src="https://unpkg.com/@hpcc-js/wasm@1.20.1/dist/index.min.js"></script>
+  <script> var hpccWasm = window["@hpcc-js/wasm"]; </script>
+  <script src="https://cdn.jsdelivr.net/gh/dash14/svg-pan-zoom/dist/svg-pan-zoom.min.js"></script>
+  <script type="module">
+  </script>
+</head>
+<body>
+<style>
+  html, body, main { width: 100vw; height: 100vh; margin: 0;}
+  main {
+    display: grid;
+    grid-template-areas:
+      "beam   target"
+      "create target";
+    grid-template-columns: 1fr 5fr;
+    grid-template-rows: 3fr 1fr;
+  }
+  #beam   {grid-area:beam; background-color:palegreen;}
+  #create {grid-area:create; background-color:bisque;}
+  #target {grid-area:target; overflow:scroll;}
+  #beam, #create {
+    margin:4px;
+    padding:8px;
+    overflow-y: scroll;
+  }
+  #beam input, label {cursor:pointer;}
+</style>
+<main>
+  <div id="beam" ondrop="drop(event)" ondragover="over(event)" ondragenter="over(event)">
+    <div id="beamlist" onchange="dochoose(event)"></div>
+  </div>
+  <div id="target" ondrop="drop(event)" ondragover="over(event)" ondragenter="over(event)">
+  </div>
+  <div id="create" ondrop="drop(event)" ondragover="over(event)" ondragenter="over(event)">
+    <div style="padding:16px; font-size:large;">More about
+      <a href=http://search.dojo.fed.wiki/solo-super-collaborator.html target=_blank>Solo</a>
+      <p>
+        <button onclick=dogroup(event)>group</button>
+        <button onclick=dodownload(event)>download</button></p>
+  </div>
+</main>
+<script type="module">
+  const beam = []
+
+  window.addEventListener("message",event => {
+    const data = event.data
+    console.log({data})
+    beam.push(data)
+    refreshBeam()
+  })
+
+  function refreshBeam() {
+    const now = (new Date).getTime()
+    const sections = [
+      {date: now-1000*60*60*24*365*100, period: 'Years'},
+      {date: now-1000*60*60*24*365, period: 'a Year'},
+      {date: now-1000*60*60*24*91, period: 'a Season'},
+      {date: now-1000*60*60*24*7*31, period: 'a Month'},
+      {date: now-1000*60*60*24*7, period: 'a Week'},
+      {date: now-1000*60*60*24, period: 'a Day'},
+      {date: now-1000*60*60, period: 'an Hour'},
+      {date: now-1000*60, period: 'a Minute'},
+      {date: now, period: 'Seconds'}
+    ]
+
+    // this.nextdownload = null
+    const want = [...window.beamlist.querySelectorAll('input[type=checkbox]:checked')]
+      .map(e => +e.value)
+    console.log('refreshBeam',want)
+    // if (!want.length) window.dochoose({})
+    const names = beam.map(poem => poem.name || poem.graph.nodes[0].type)
+    let then = 1
+    window.beamlist.innerHTML = names
+      .map((n,i) => {
+        const poem = beam[i]
+        let sep = ''
+        for (const section of sections) {
+          if (then && poem.date && then<section.date && poem.date>=section.date) {
+            sep = `<div><font color=gray>Within ${section.period}</font></div>`
+          }
+        }
+        then = poem.date || 1
+        const hover = poem.date ? `title="${new Date(poem.date).toLocaleString()}"` : ''
+        const number = `<sup>${poem.graph.nodes.length}</sup>`
+        return `${sep}<div><font color=gray size=1>${i}</font>
+        <input type=checkbox value=${i} id=n${i} ${want.includes(i)?'checked':''}>
+        <label for=n${i} ${hover}>${n}${number}</label></div>`
+      })
+      .join("\n")
+    const last = window.beamlist.querySelector('div:last-of-type')
+    if(last) last.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"})
+  }
+
+  window.dochoose = function (event) {
+    // croquet.view.nextdownload = null
+    const checked = [...window.beam.querySelectorAll('input[type=checkbox]:checked')]
+    const chosen = checked.map(e => Object.assign({index:e.value},beam[e.value]))
+    console.log({chosen})
+    display(chosen)
+    // recommend(chosen)
+  }
+
+  let drawing = false
+  // let siminterval = null
+  let panSVG = null
+  const panZoom = {}
+  async function display(chosen) {
+    if(!drawing){
+      drawing = true
+      const complex = composite(chosen)
+      try {
+        if (document.querySelector('#target svg')) {
+          panZoom.pan = panSVG.getPan()
+          panZoom.zoom = panSVG.getZoom()
+          panZoom.size = {
+              width: document.querySelector('#target svg').width.baseVal.valueInSpecifiedUnits,
+              height: document.querySelector('#target svg').height.baseVal.valueInSpecifiedUnits
+            }
+        }
+        const dot = dotify(complex)
+        window.dot = dot
+        hpccWasm.graphviz.layout(window.dot, "svg", "dot").then(svg => {
+          target.innerHTML = svg;
+          drawing = false
+          hoverbold(target)
+          const targetBounds = { width: document.querySelector('#target').clientWidth, height: document.querySelector('#target').clientHeight }
+          const svgBounds = { width: document.querySelector('#target svg').clientWidth, height: document.querySelector('#target svg').clientHeight }
+          let svgElement = document.querySelector('#target svg')
+          panSVG = svgPanZoom(svgElement)
+          document.querySelector('#target svg').style.height = "100%"
+          document.querySelector('#target svg').style.width = "100%"
+          if (targetBounds.width < svgBounds.width || targetBounds.height < svgBounds.height) {
+            panSVG.resize()
+          }
+          panSVG.fit()
+          panSVG.center()
+          if (panZoom.size &&
+              panZoom.size.width == document.querySelector('#target svg').width.baseVal.valueInSpecifiedUnits &&
+              panZoom.size.height == document.querySelector('#target svg').height.baseVal.valueInSpecifiedUnits) {
+            panSVG.zoom(panZoom.zoom)
+            panSVG.pan(panZoom.pan)
+          }
+        })
+      } catch (err) {
+        console.log('display error', err)
+        drawing = false
+      }
+    } else {
+      console.log('display: skipping', chosen)
+    }
+  }
+
+const uniq = (value, index, self) => self.indexOf(value) === index
+
+class Graph {
+  constructor(nodes=[], rels=[]) {
+    this.nodes = nodes;
+    this.rels = rels;
+  }
+
+  addNode(type, props={}){
+    const obj = {type, in:[], out:[], props};
+    this.nodes.push(obj);
+    return this.nodes.length-1;
+  }
+
+  addRel(type, from, to, props={}) {
+    const obj = {type, from, to, props};
+    this.rels.push(obj);
+    const rid = this.rels.length-1;
+    this.nodes[from].out.push(rid)
+    this.nodes[to].in.push(rid);
+    return rid;
+  }
+
+  tally(){
+    const tally = list => list.reduce((s,e)=>{s[e.type] = s[e.type] ? s[e.type]+1 : 1; return s}, {});
+    return { nodes:tally(this.nodes), rels:tally(this.rels)};
+  }
+
+  size(){
+    return this.nodes.length + this.rels.length;
+  }
+
+  static load(obj) {
+    // let obj = await fetch(url).then(res => res.json())
+    return new Graph(obj.nodes, obj.rels)
+  }
+
+  static async fetch(url) {
+    const obj = await fetch(url).then(res => res.json())
+    return Graph.load(obj)
+  }
+
+  static async read(path) {
+    const json = await Deno.readTextFile(path);
+    const obj = JSON.parse(json);
+    return Graph.load(obj)
+  }
+
+  stringify(...args) {
+    const obj = { nodes: this.nodes, rels: this.rels }
+    return JSON.stringify(obj, ...args)
+  }
+}
+
+
+function composite(concepts) {
+  const merged = {nids:[]}
+  const comp = new Graph()
+  for (const concept of concepts) {
+    const {name,graph} = concept
+    merge(comp,graph,name)
+  }
+  return {graph:comp, merged}
+
+
+  function merge(comp,incr,source) {
+
+    function mergeprops(into,from) {
+      const keys = Object.keys(into)
+        .concat(Object.keys(from))
+        .filter(uniq)
+      for (const key of keys) {
+        if (into[key]) {
+          // if (from[key] && into[key] != from[key]) {
+          //   window.result.innerHTML +=
+          //     `<div style="font-size:small; padding:4px; background-color:#fee; border-radius:4px; border:1px solid #aaa;">
+          //       conflict for "${key}" property<br>
+          //       choosing "${into[key]}" over "${from[key]}"</div>`
+          // }
+        }
+        else {
+          if(from[key]) {
+            into[key] = from[key]
+          }
+        }
+      }
+    }
+
+    const nids = {}  // incr => comp
+    incr.nodes.forEach((node,id) => {
+      const match = comp.nodes.find(each =>
+        each.type == node.type &&
+        each.props.name == node.props.name)
+      if(match) {
+        nids[id] = comp.nodes.findIndex(node => node === match)
+        merged.nids.push(nids[id])
+        mergeprops(match.props, node.props)
+      } else {
+        nids[id] = comp.addNode(node.type,node.props)
+      }
+    })
+    incr.rels.forEach(rel => {
+      const match = comp.rels.find(each =>
+        each.type == rel.type &&
+        each.from == nids[rel.from] &&
+        each.to == nids[rel.to]
+      )
+      if(match) {
+        mergeprops(match.props, rel.props)
+      } else {
+        rel.props.source = source
+        comp.addRel(rel.type, nids[rel.from], nids[rel.to], rel.props)
+      }
+    })
+  }
+}
+
+// render graph as dot input to graphviz
+
+function dotify(complex) {
+  const inputs = ["read", "get", "first"]
+
+  const {graph, merged} = complex
+  const tip = props => Object.entries(props).filter(e => e[1]).map(e => `${e[0]}: ${e[1]}`).join("\\n")
+
+  const layout = graph.nodes
+    .filter(node => node.type == 'Graphviz' && node.props.layout)
+    .map(node => node.props.layout)
+  const emphasis = graph.nodes
+    .filter(node => node.type == 'Graphviz' && node.props.emphasis)
+    .map(node => node.props.emphasis)
+    ?.reverse()[0] || {}
+  console.log('dotify',emphasis)
+  window.graph = graph
+
+  const nodes = graph.nodes.map((node,id) => {
+    const icon = node.props.url ? " 🔗" : node.props.tick ? " ☐" : ""
+    const label = `${node.type}\\n${node.props.name}${icon}`
+    const color = emphasis[node.type] || ''
+    return `${id} [label="${label}" ${color} ${(node.props.url||node.props.tick)?`URL="${node.props.url||'#'}" target="_blank"`:''} tooltip="${tip(node.props)}"]`
+  })
+
+      // if inputs.include?r['type']
+      //   file.puts "#{r['to']} -> #{r['from']} [#{props} dir=back]"
+      // else
+      //   file.puts "#{r['from']} -> #{r['to']} [#{props}]"
+      // end
+
+  const edges = graph.rels.map(rel => {
+    const color = emphasis[rel.type] || ''
+    if (inputs.includes(rel.type))
+      return `${rel.to}->${rel.from} [label="${rel.type}" ${color} labeltooltip="${tip(rel.props)}" dir=back]`
+    else
+      return `${rel.from}->${rel.to} [label="${rel.type}" ${color} labeltooltip="${tip(rel.props)}"]`
+  })
+  return [
+    'digraph {',
+    'overlap = false; splines=true',
+    `layout = ${layout.reverse()[0]||'dot'};`,
+    'node [shape=box style=filled fillcolor=gold penwidth=2]',
+    ...merged.nids,
+    'node [fillcolor=palegreen penwidth=1]',
+    ...nodes,
+    ...edges,
+    '}'].join("\n")
+}
+
+// embolden lines from graphviz svg nodes on hover
+
+function hoverbold(div,select='both') {
+  let rels = [] // [[edge, from, to], ...]
+  const title = target => target.querySelector('title').textContent.replace(/\\n/g,' ')
+  div.querySelectorAll('.edge').forEach(edge => rels.push([edge, ...title(edge).split('->')]))
+  const trace = (node,doit) => {
+    console.log()
+    const related = io => rels.filter(row => row[io]==node)
+    switch (select) {
+      case 'output':
+        related(1).map(row => doit(row[0]))
+        break
+      case 'input':
+        related(2).map(row => doit(row[0]))
+        break
+      case 'both':
+        related(1).map(row => doit(row[0]))
+        related(2).map(row => doit(row[0]))
+        break
+      case 'most':
+        let o = related(1).length
+        let i = related(2).length
+        related(o>i?1:2).map(row => doit(row[0]))
+        break
+    }
+  }
+  const feature = (event,width) => {
+    if(width==3) console.log([...event.target.querySelectorAll('text')].map(e => e.innerHTML).join(" "))
+  }
+  const stroke = width => {
+    const adjust = edge => edge.setAttribute('stroke-width',width)
+    return event => {feature(event,width); return trace(title(event.target), adjust)}
+  }
+  div.querySelectorAll('.node').forEach(node => {
+    node.addEventListener('mouseenter',stroke(3))
+    node.addEventListener('mouseleave',stroke(1))
+  })
+}
+
+</script>
+</body>
+</html>
