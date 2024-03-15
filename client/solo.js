@@ -9,11 +9,13 @@
       .replace(/\*(.+?)\*/g, '<i>$1</i>')
   }
 
+  let todo = []
   async function emit($item, item) {
     const testurl = 'https://raw.githubusercontent.com/WardCunningham/search/master/README.graph.jsonl'
     const testjsonl = await fetch(testurl).then(res => res.text())
-    const names = testjsonl.trim().split(/\n/)
+    todo = testjsonl.trim().split(/\n/)
       .map(line => JSON.parse(line))
+    const names = todo
       .map(obj => obj.name)
     return $item.append(`
       <p style="background-color:#eee;padding:15px;">
@@ -25,7 +27,14 @@
 
   const dopopup = event => {
     console.log('target',event.target)
-    window.open('/plugins/solo/dialog/#','solo','popup,height=720,width=1280')
+    const popup = window.open('/plugins/solo/dialog/#','solo','popup,height=720,width=1280')
+    if (popup.location.pathname != '/plugins/solo/dialog/'){
+      popup.addEventListener('load', event =>
+        popup.postMessage(todo.shift()))
+    }
+    else {
+      popup.postMessage(todo.shift(), window.origin)
+    }
   }
 
   // window.plugins.solo.dopopup = popup
