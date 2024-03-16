@@ -50,18 +50,10 @@
 
 
 
-  { // window.postMessage({type:'batch',graphs:thompson.slice(0,15)})
-    const found = `http://found.ward.fed.wiki/assets/pages/aspects-of-recent-changes`
-    const url = `${found}/thompson-noosphere.jsonl`
-    const text = await fetch(url).then(res=>res.text())
-    window.thompson = text.trim().split(/\n/)
-      .map(line => JSON.parse(line))
-  }
-
   window.addEventListener("message",event => {
     const data = event.data
-    // for (const graph of data.graphs)
-    //   graph.date = Date.now()
+    for (const graph of data.graphs)
+      graph.date = Date.now()
     console.log({data})
     beam.push(...data.graphs)
     refreshBeam()
