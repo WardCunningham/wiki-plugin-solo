@@ -48,8 +48,19 @@
 <script type="module">
   const beam = []
 
+
+
+  { // window.postMessage({type:'batch',graphs:thompson.slice(0,15)})
+    const found = `http://found.ward.fed.wiki/assets/pages/aspects-of-recent-changes`
+    const url = `${found}/thompson-noosphere.jsonl`
+    const text = await fetch(url).then(res=>res.text())
+    window.thompson = text.trim().split(/\n/)
+      .map(line => JSON.parse(line))
+  }
+
   window.addEventListener("message",event => {
     const data = event.data
+    data.graphs.forEach(graph => graph.date = Date.now())
     console.log({data})
     beam.push(...data.graphs)
     refreshBeam()
@@ -103,7 +114,27 @@
     const chosen = checked.map(e => Object.assign({index:e.value},beam[e.value]))
     console.log({chosen})
     display(chosen)
-    // recommend(chosen)
+    recommend(chosen)
+  }
+
+  function recommend(chosen) {
+    const vocabulary = new Set()
+    const hash = node => `${node.type}: ${node.props.name || ''}`
+    for (const poem of chosen) {
+      for (const node of poem.graph.nodes) {
+        vocabulary.add(hash(node))
+      }
+    }
+    const similar = graph => {
+      for (const node of graph.nodes) {
+        if (vocabulary.has(hash(node))) return true
+      }
+      return false
+    }
+    window.beam.querySelectorAll('input[type=checkbox]').forEach(elem => {
+      const color = !elem.checked && similar(beam[elem.value].graph) ? 'darkorange' : 'black'
+      elem.nextElementSibling.style.color = color
+    })
   }
 
   let drawing = false
