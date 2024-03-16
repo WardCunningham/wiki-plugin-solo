@@ -60,7 +60,8 @@
 
   window.addEventListener("message",event => {
     const data = event.data
-    data.graphs.forEach(graph => graph.date = Date.now())
+    for (const graph of data.graphs)
+      graph.date = Date.now()
     console.log({data})
     beam.push(...data.graphs)
     refreshBeam()
