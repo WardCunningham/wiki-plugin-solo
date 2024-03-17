@@ -83,6 +83,45 @@
     })
   }
 
+
+  function soloListener(event) {
+    // only continue if event is from a solo popup.
+    // events from a popup window will have an opener
+    // ensure that the popup window is one of ours
+    if (!event.source.opener || event.source.location.pathname !== '/plugins/solo/dialog/') {
+      if (wiki.debug) {console.log('soloListener - not for us', {event})}
+      return
+    }
+    if (wiki.debug) {console.log('soloListener - ours', {event})}
+
+    const { data } = event
+    const { action, keepLineup=false, pageKey=null, title=null, context=null } = data;
+
+    let $page = null
+    if (pageKey != null) {
+      $page = keepLineup ? null : $('.page').filter((i, el) => $(el).data('key') == pageKey)
+    }
+
+    switch (action) {
+      case 'doInternalLink':
+        wiki.pageHandler.context = context
+        wiki.doInternalLink(title, $page)
+        break
+      default:
+        console.error({ where:'soloListener', message: "unknown action", data })
+    }
+  }
+
+  if (typeof window !== "undefined" && window !== null) {
+    // moduleLoaded = import('/plugins/graphviz/graphviz-viewer.js');
+    // window.plugins.graphviz = {emit, bind};
+    if (typeof window.soloListener !== "undefined" || window.soloListener == null) {
+      console.log('**** Adding solo listener')
+      window.soloListener = soloListener
+      window.addEventListener("message", soloListener)
+    }
+  }
+
   if (typeof window !== "undefined" && window !== null) {
     window.plugins.solo = {emit, bind, dopopup}
   }

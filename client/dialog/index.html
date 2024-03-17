@@ -48,7 +48,12 @@
 <script type="module">
   const beam = []
 
-
+  // window.postMessage({type:'batch',graphs:(await want('wards-favorites')).slice(0,15)})
+  window.want = async file =>
+    fetch(`http://found.ward.fed.wiki/assets/pages/aspects-of-recent-changes/${file}.jsonl`)
+    .then(res => res.text())
+    .then(text => text.trim().split(/\n/)
+      .map(line => JSON.parse(line)))
 
   window.addEventListener("message",event => {
     const data = event.data
@@ -153,6 +158,7 @@
           target.innerHTML = svg;
           drawing = false
           hoverbold(target)
+          clickready(target,complex.graph)
           const targetBounds = { width: document.querySelector('#target').clientWidth, height: document.querySelector('#target').clientHeight }
           const svgBounds = { width: document.querySelector('#target svg').clientWidth, height: document.querySelector('#target svg').clientHeight }
           let svgElement = document.querySelector('#target svg')
@@ -384,6 +390,29 @@ function hoverbold(div,select='both') {
   div.querySelectorAll('.node').forEach(node => {
     node.addEventListener('mouseenter',stroke(3))
     node.addEventListener('mouseleave',stroke(1))
+  })
+}
+
+function clickready(div,graph) {
+  div.querySelectorAll('.node').forEach(node => {
+    node.addEventListener('click', event => {
+      const node = event.target.parentElement.parentElement.parentElement
+      const nid = +node.querySelector('title').textContent
+      const props = graph.nodes[nid].props
+      if('site' in props) {
+        const site = props.site
+        const title = props.name.replaceAll(/\n/g,' ')
+        const message = {
+          action: 'doInternalLink',
+          keepLineup:event.shiftKey,
+          pageKey: window.pageKey,
+          context: [site],
+          title
+        }
+        console.log(message)
+        window.opener.postMessage(message)
+      }
+    })
   })
 }
 
