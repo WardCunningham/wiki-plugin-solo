@@ -50,11 +50,15 @@
   let todo = []
   async function emit($item, item) {
     parsed = parse(item.text)
-    $item.append(`<p style="background-color:#eee;padding:15px;">
-      ${parsed.output}</p>`)
+    $item.append(`
+      <div style="background-color:#eee;padding:15px;">
+        <p>${parsed.output}</p>
+      </div>`)
     todo = await Promise.all(parsed.graphs)
-    $item.append(`<p>
-      <button onclick="window.plugins.solo.dopopup(event)">view in solo</button></p>`)
+    $item.find('div').append(`
+      <p><button onclick="window.plugins.solo.dopopup(event)">
+        view in solo
+      </button></p>`)
   }
 
   const dopopup = event => {

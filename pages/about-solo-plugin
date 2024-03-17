@@ -4,12 +4,12 @@
   {
     "type": "paragraph",
     "id": "0980980909080",
-    "text": "This plugin retrieves Graph objects from a variety of sources and then makes these available to a popup version of the Solo Super Collaborator."
+    "text": "This plugin retrieves Graph objects from a variety of sources and then makes these available to a popup version of the Solo Super Collaborator. [https://github.com/WardCunningham/wiki-plugin-solo/tree/main github]"
   },
   {
     "type": "solo",
     "id": "76568768768678",
-    "text": "LINK Search https://raw.githubusercontent.com/WardCunningham/search/master/README.graph.jsonl\nLINK Pages http://found.ward.fed.wiki/assets/pages/aspects-of-recent-changes/wards-favorites.jsonl"
+    "text": "LINK Search https://raw.githubusercontent.com/WardCunningham/search/master/README.graph.jsonl"
   }
 ],
   "journal": [
@@ -21,12 +21,12 @@
   {
     "type": "paragraph",
     "id": "0980980909080",
-    "text": "This plugin retrieves Graph objects from a variety of sources and then makes these available to a popup version of the Solo Super Collaborator."
+    "text": "This plugin retrieves Graph objects from a variety of sources and then makes these available to a popup version of the Solo Super Collaborator. [https://github.com/WardCunningham/wiki-plugin-solo/tree/main github]"
   },
   {
     "type": "solo",
     "id": "76568768768678",
-    "text": "LINK Search https://raw.githubusercontent.com/WardCunningham/search/master/README.graph.jsonl\nLINK Pages http://found.ward.fed.wiki/assets/pages/aspects-of-recent-changes/wards-favorites.jsonl"
+    "text": "LINK Search https://raw.githubusercontent.com/WardCunningham/search/master/README.graph.jsonl"
   }
 ]
     },
