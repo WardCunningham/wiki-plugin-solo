@@ -48,7 +48,9 @@
 
   let parsed
   let todo = []
+  let pageKey
   async function emit($item, item) {
+    pageKey = $item.parents('.page').data('key')
     parsed = parse(item.text)
     $item.append(`
       <div style="background-color:#eee;padding:15px;">
@@ -64,7 +66,7 @@
   const dopopup = event => {
     const graphs = todo.shift()
     todo.push(graphs)
-    const doing = {type:'batch', graphs}
+    const doing = {type:'batch', graphs, pageKey}
     const popup = window.open('/plugins/solo/dialog/#','solo','popup,height=720,width=1280')
     if (popup.location.pathname != '/plugins/solo/dialog/'){
       console.log('launching new dialog')

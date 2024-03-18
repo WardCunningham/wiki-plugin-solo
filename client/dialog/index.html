@@ -47,6 +47,7 @@
 </main>
 <script type="module">
   const beam = []
+  let pageKey
 
   // window.postMessage({type:'batch',graphs:(await want('wards-favorites')).slice(0,15)})
   window.want = async file =>
@@ -57,6 +58,7 @@
 
   window.addEventListener("message",event => {
     const data = event.data
+    pageKey = data.pageKey
     for (const graph of data.graphs)
       graph.date = Date.now()
     console.log({data})
@@ -405,7 +407,7 @@ function clickready(div,graph) {
         const message = {
           action: 'doInternalLink',
           keepLineup:event.shiftKey,
-          pageKey: window.pageKey,
+          pageKey,
           context: [site],
           title
         }
