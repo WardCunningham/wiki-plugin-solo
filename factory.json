@@ -1,5 +1,6 @@
 {
   "name": "Solo",
-  "title": "Solo Plugin",
-  "category": "other"
+  "category": "other",
+  "title": "Solo Super Collaborator",
+  "pages": ["Solo Lineup Browser"]
 }

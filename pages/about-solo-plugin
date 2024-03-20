@@ -1,37 +1,183 @@
 {
   "title": "About Solo Plugin",
   "story": [
-  {
-    "type": "paragraph",
-    "id": "0980980909080",
-    "text": "This plugin retrieves Graph objects from a variety of sources and then makes these available to a popup version of the Solo Super Collaborator. [https://github.com/WardCunningham/wiki-plugin-solo/tree/main github]"
-  },
-  {
-    "type": "solo",
-    "id": "76568768768678",
-    "text": "LINK Search https://raw.githubusercontent.com/WardCunningham/search/master/README.graph.jsonl"
-  }
-],
-  "journal": [
-  {
-    "type": "create",
-    "item": {
-      "title": "About Solo Plugin",
-      "story": [
-  {
-    "type": "paragraph",
-    "id": "0980980909080",
-    "text": "This plugin retrieves Graph objects from a variety of sources and then makes these available to a popup version of the Solo Super Collaborator. [https://github.com/WardCunningham/wiki-plugin-solo/tree/main github]"
-  },
-  {
-    "type": "solo",
-    "id": "76568768768678",
-    "text": "LINK Search https://raw.githubusercontent.com/WardCunningham/search/master/README.graph.jsonl"
-  }
-]
+    {
+      "type": "paragraph",
+      "id": "0980980909080",
+      "text": "This plugin retrieves Graph objects from a variety of sources and then makes these available to a popup version of the Solo Super Collaborator. [https://github.com/WardCunningham/wiki-plugin-solo/tree/main github]"
     },
-    "date": 1710441172000,
-    "certificate": "from mkplugin.sh"
-  }
-]
+    {
+      "type": "solo",
+      "id": "76568768768678",
+      "text": "LINK Search https://raw.githubusercontent.com/WardCunningham/search/master/README.graph.jsonl"
+    },
+    {
+      "type": "paragraph",
+      "id": "5c034d60229c8486",
+      "text": "Various keywords can be mixed with captions to find named graphs called \"aspects\". Keywords are all caps and begin in column one."
+    },
+    {
+      "type": "markdown",
+      "id": "927b859e258df4bd",
+      "text": "Say __LINK \\<subject> \\<url>__ to read aspects from a published location."
+    },
+    {
+      "type": "markdown",
+      "id": "6c83afc50af3d7c9",
+      "text": "Say __LINEUP__ to read aspect sources above and to the left in the lineup. See [[Solo Lineup Browser]]"
+    }
+  ],
+  "journal": [
+    {
+      "type": "create",
+      "item": {
+        "title": "About Solo Plugin",
+        "story": [
+          {
+            "type": "paragraph",
+            "id": "0980980909080",
+            "text": "This plugin retrieves Graph objects from a variety of sources and then makes these available to a popup version of the Solo Super Collaborator. [https://github.com/WardCunningham/wiki-plugin-solo/tree/main github]"
+          },
+          {
+            "type": "solo",
+            "id": "76568768768678",
+            "text": "LINK Search https://raw.githubusercontent.com/WardCunningham/search/master/README.graph.jsonl"
+          }
+        ]
+      },
+      "date": 1710441172000,
+      "certificate": "from mkplugin.sh"
+    },
+    {
+      "item": {
+        "type": "factory",
+        "id": "5c034d60229c8486"
+      },
+      "id": "5c034d60229c8486",
+      "type": "add",
+      "after": "76568768768678",
+      "date": 1710906004430
+    },
+    {
+      "type": "edit",
+      "id": "5c034d60229c8486",
+      "item": {
+        "type": "paragraph",
+        "id": "5c034d60229c8486",
+        "text": "Various keywords can be mixed with captions to find named graphs called \"aspects\". Keywords are all caps and begin in column one."
+      },
+      "date": 1710906052762
+    },
+    {
+      "item": {
+        "type": "factory",
+        "id": "927b859e258df4bd"
+      },
+      "id": "927b859e258df4bd",
+      "type": "add",
+      "after": "5c034d60229c8486",
+      "date": 1710906055222
+    },
+    {
+      "type": "edit",
+      "id": "927b859e258df4bd",
+      "item": {
+        "type": "paragraph",
+        "id": "927b859e258df4bd",
+        "text": "Say LINK <subject> <url> to read aspects from a published location."
+      },
+      "date": 1710906182558
+    },
+    {
+      "type": "add",
+      "id": "6c83afc50af3d7c9",
+      "item": {
+        "type": "factory",
+        "id": "6c83afc50af3d7c9",
+        "text": "Say LINEUP to read aspect sources from above and to the left in the lineup."
+      },
+      "after": "927b859e258df4bd",
+      "date": 1710906233250
+    },
+    {
+      "type": "edit",
+      "id": "6c83afc50af3d7c9",
+      "item": {
+        "type": "markdown",
+        "id": "6c83afc50af3d7c9",
+        "text": "Say __LINEUP__ to read aspect sources from above and to the left in the lineup."
+      },
+      "date": 1710906249032
+    },
+    {
+      "type": "edit",
+      "id": "927b859e258df4bd",
+      "item": {
+        "type": "factory",
+        "id": "927b859e258df4bd",
+        "text": "Say __LINK <subject> <url> to read aspects from a published location."
+      },
+      "date": 1710906258255
+    },
+    {
+      "type": "edit",
+      "id": "927b859e258df4bd",
+      "item": {
+        "type": "markdown",
+        "id": "927b859e258df4bd",
+        "text": "Say __LINK <subject> <url>__ to read aspects from a published location."
+      },
+      "date": 1710906265502
+    },
+    {
+      "type": "edit",
+      "id": "6c83afc50af3d7c9",
+      "item": {
+        "type": "markdown",
+        "id": "6c83afc50af3d7c9",
+        "text": "Say __LINEUP__ to read aspect sources in the lineup."
+      },
+      "date": 1710906287716
+    },
+    {
+      "type": "edit",
+      "id": "927b859e258df4bd",
+      "item": {
+        "type": "markdown",
+        "id": "927b859e258df4bd",
+        "text": "Say __LINK \\<subject> <url>__ to read aspects from a published location."
+      },
+      "date": 1710906303664
+    },
+    {
+      "type": "edit",
+      "id": "927b859e258df4bd",
+      "item": {
+        "type": "markdown",
+        "id": "927b859e258df4bd",
+        "text": "Say __LINK \\<subject> \\<url>__ to read aspects from a published location."
+      },
+      "date": 1710906310290
+    },
+    {
+      "type": "edit",
+      "id": "6c83afc50af3d7c9",
+      "item": {
+        "type": "markdown",
+        "id": "6c83afc50af3d7c9",
+        "text": "Say __LINEUP__ to read aspect sources above and to the left in the lineup."
+      },
+      "date": 1710906331116
+    },
+    {
+      "type": "edit",
+      "id": "6c83afc50af3d7c9",
+      "item": {
+        "type": "markdown",
+        "id": "6c83afc50af3d7c9",
+        "text": "Say __LINEUP__ to read aspect sources above and to the left in the lineup. See [[Solo Lineup Browser]]"
+      },
+      "date": 1710906419530
+    }
+  ]
 }

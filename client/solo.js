@@ -11,12 +11,24 @@
       .replace(/\*(.+?)\*/g, '<i>$1</i>')
   }
 
+  function lineup ($item){
+    const items = [...document.querySelectorAll('.item')]
+    const index = items.indexOf($item.get(0))
+    const sources = items.slice(0,index)
+      .filter(item => item.classList.contains('aspect-source'))
+    console.log({sources})
+    const aspectss = sources
+      .map(item => item.aspectData && item.aspectData() || [])
+    console.log({sources,aspectss})
+    return aspectss
+  }
+
   // https://github.com/bitinn/node-fetch/issues/481
   function absolute(url) {
     return url.replace(/^(https?:)\/([^\/])/,`$1//${location.host}/$2`)
   }
 
-  function parse(text) {
+  function parse($item, text) {
     let graphs = []
     let output = text.split(/\r?\n/).map (line => {
       var m
@@ -26,6 +38,10 @@
         const graph = link(absolute(m[2]))
         graphs.push(graph)
         line = `LINK <a href="${absolute(m[2])}" target=_blank>${m[1]} <img src="/images/external-link-ltr-icon.png"></a>`
+      } else if (m = line.match(/^LINEUP$/)) {
+        const aspectss = lineup($item)
+        graphs.push(...aspectss)
+        line = `LINEUP<br> &nbsp; ${aspectss.length} sources, ${aspectss.flat().length} aspects`
       } else {
         line = `<font color=gray>${expand(line)}</font>`
       }
@@ -51,12 +67,13 @@
   let pageKey
   async function emit($item, item) {
     pageKey = $item.parents('.page').data('key')
-    parsed = parse(item.text)
+    parsed = parse($item, item.text)
     $item.append(`
       <div style="background-color:#eee;padding:15px;">
         <p>${parsed.output}</p>
       </div>`)
     todo = await Promise.all(parsed.graphs)
+    console.log({todo})
     $item.find('div').append(`
       <p><button onclick="window.plugins.solo.dopopup(event)">
         view in solo
@@ -65,6 +82,7 @@
 
   const dopopup = event => {
     const graphs = todo.shift()
+    console.log({graphs})
     todo.push(graphs)
     const doing = {type:'batch', graphs, pageKey}
     const popup = window.open('/plugins/solo/dialog/#','solo','popup,height=720,width=1280')

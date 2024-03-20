@@ -1,0 +1,129 @@
+{
+  "title": "Solo Lineup Browser",
+  "story": [
+    {
+      "type": "paragraph",
+      "id": "3616fb80111e1029",
+      "text": "We look back over the lineup to see pages that announce \"aspects\" ready to be browsed in the Solo Super Collaborator's popup window."
+    },
+    {
+      "type": "solo",
+      "id": "71e3d95f7330fb75",
+      "text": "LINEUP"
+    },
+    {
+      "type": "paragraph",
+      "id": "ab6b0fb0a27c87e1",
+      "text": "See [[About Solo Plugin]] for creating browsable content."
+    }
+  ],
+  "journal": [
+    {
+      "type": "create",
+      "item": {
+        "title": "Solo Lineup Browser",
+        "story": []
+      },
+      "date": 1710905472800
+    },
+    {
+      "item": {
+        "type": "factory",
+        "id": "3616fb80111e1029"
+      },
+      "id": "3616fb80111e1029",
+      "type": "add",
+      "date": 1710905483898
+    },
+    {
+      "type": "edit",
+      "id": "3616fb80111e1029",
+      "item": {
+        "type": "paragraph",
+        "id": "3616fb80111e1029",
+        "text": "We look bak over the lineup to see pages that announce \"aspects\" ready to be browsed in the Solo Super Collaborator. "
+      },
+      "date": 1710905619285
+    },
+    {
+      "type": "edit",
+      "id": "3616fb80111e1029",
+      "item": {
+        "type": "paragraph",
+        "id": "3616fb80111e1029",
+        "text": "We look back over the lineup to see pages that announce \"aspects\" ready to be browsed in the Solo Super Collaborator. "
+      },
+      "date": 1710905643258
+    },
+    {
+      "item": {
+        "type": "factory",
+        "id": "71e3d95f7330fb75"
+      },
+      "id": "71e3d95f7330fb75",
+      "type": "add",
+      "after": "3616fb80111e1029",
+      "date": 1710905645336
+    },
+    {
+      "type": "edit",
+      "id": "71e3d95f7330fb75",
+      "item": {
+        "type": "solo",
+        "id": "71e3d95f7330fb75",
+        "text": "LINEUP"
+      },
+      "date": 1710905652212
+    },
+    {
+      "type": "edit",
+      "id": "3616fb80111e1029",
+      "item": {
+        "type": "paragraph",
+        "id": "3616fb80111e1029",
+        "text": "We look back over the lineup to see pages that announce \"aspects\" ready to be browsed in the Solo Super Collaborator's popup window."
+      },
+      "date": 1710905681145
+    },
+    {
+      "item": {
+        "type": "factory",
+        "id": "ab6b0fb0a27c87e1"
+      },
+      "id": "ab6b0fb0a27c87e1",
+      "type": "add",
+      "after": "71e3d95f7330fb75",
+      "date": 1710905708694
+    },
+    {
+      "type": "edit",
+      "id": "ab6b0fb0a27c87e1",
+      "item": {
+        "type": "paragraph",
+        "id": "ab6b0fb0a27c87e1",
+        "text": "See [[About Solo Plugin]] for tips on creating this kind of content."
+      },
+      "date": 1710905751034
+    },
+    {
+      "type": "edit",
+      "id": "ab6b0fb0a27c87e1",
+      "item": {
+        "type": "paragraph",
+        "id": "ab6b0fb0a27c87e1",
+        "text": "See [[About Solo Plugin]] for tips on creating browsable content."
+      },
+      "date": 1710905779136
+    },
+    {
+      "type": "edit",
+      "id": "ab6b0fb0a27c87e1",
+      "item": {
+        "type": "paragraph",
+        "id": "ab6b0fb0a27c87e1",
+        "text": "See [[About Solo Plugin]] for creating browsable content."
+      },
+      "date": 1710905790443
+    }
+  ]
+}
