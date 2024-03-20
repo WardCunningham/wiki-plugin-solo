@@ -7,27 +7,55 @@ body {
   line-height: 1.3;
   color: #333;
 }
-.page {
-  margin: 8px;
-  outline: none;
-  box-shadow: 2px 1px 4px rgba(0,0,0,0.2);
-  background: #eee;
-  padding: 8px;
-  position: absolute;
-  inset: 0px;
+
+main {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+}
+
+main {
+  display: grid;
+  grid-template-areas:
+    "beam   target"
+    "create target";
+  grid-template-columns: 1fr 5fr;
+  grid-template-rows: 3fr 1fr;
+  gap: 0px;
+}
+
+#beam {
+  grid-area: beam;
+  background-color: palegreen;
   overflow: auto;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: #ccc #eee;
 }
-p {
-  margin: 8px;
+
+#create {
+  grid-area: create;
+  background-color: bisque;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc #eee;
 }
-.remote {
-  vertical-align: text-top;
-  width: 16px;
-  height: 16px
+
+#target {
+  grid-area: target;
+  overflow: hidden;
+  margin: 4px 4px 4px 0px;
+  background-color: #fff;
 }
-a {
-  text-decoration: none;
+
+#beam,
+#create {
+  margin: 4px;
+  padding: 8px;
+}
+
+#beam input,
+label {
+  cursor: pointer;
 }

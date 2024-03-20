@@ -11,26 +11,6 @@
   </script>
 </head>
 <body>
-<style>
-  html, body, main { width: 100vw; height: 100vh; margin: 0;}
-  main {
-    display: grid;
-    grid-template-areas:
-      "beam   target"
-      "create target";
-    grid-template-columns: 1fr 5fr;
-    grid-template-rows: 3fr 1fr;
-  }
-  #beam   {grid-area:beam; background-color:palegreen;}
-  #create {grid-area:create; background-color:bisque;}
-  #target {grid-area:target; overflow:scroll;}
-  #beam, #create {
-    margin:4px;
-    padding:8px;
-    overflow-y: scroll;
-  }
-  #beam input, label {cursor:pointer;}
-</style>
 <main>
   <div id="beam" ondrop="drop(event)" ondragover="over(event)" ondragenter="over(event)">
     <div id="beamlist" onchange="dochoose(event)"></div>
