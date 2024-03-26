@@ -16,11 +16,12 @@
     const index = items.indexOf($item.get(0))
     const sources = items.slice(0,index)
       .filter(item => item.classList.contains('aspect-source'))
+      .map(item => {
+        const aspects = item.aspectData && item.aspectData() || []
+        return {item,aspects}
+      })
     console.log({sources})
-    const aspectss = sources
-      .map(item => item.aspectData && item.aspectData() || [])
-    console.log({sources,aspectss})
-    return aspectss
+    return sources
   }
 
   // https://github.com/bitinn/node-fetch/issues/481
@@ -39,9 +40,11 @@
         graphs.push(graph)
         line = `LINK <a href="${absolute(m[2])}" target=_blank>${m[1]} <img src="/images/external-link-ltr-icon.png"></a>`
       } else if (m = line.match(/^LINEUP$/)) {
-        const aspectss = lineup($item)
-        graphs.push(...aspectss)
-        line = `LINEUP<br> &nbsp; ${aspectss.length} sources, ${aspectss.flat().length} aspects`
+        const sources = lineup($item)
+        graphs.push(...sources.map(source => source.aspects))
+        line = `LINEUP<br> &nbsp;
+          ${sources.length} sources,
+          ${sources.map(source => source.aspects.length).toString()||'no'} aspects`
       } else {
         line = `<font color=gray>${expand(line)}</font>`
       }
@@ -109,16 +112,24 @@
 
 
   function soloListener(event) {
+
+    if (!event.data) return
+    const { data } = event
+    if (data?.action == "publishSourceData" && data?.name == "aspect") {
+      if (wiki.debug) console.log('soloListener - source update', {event,data})
+      return
+    }
+
     // only continue if event is from a solo popup.
     // events from a popup window will have an opener
     // ensure that the popup window is one of ours
+
     if (!event.source.opener || event.source.location.pathname !== '/plugins/solo/dialog/') {
       if (wiki.debug) {console.log('soloListener - not for us', {event})}
       return
     }
     if (wiki.debug) {console.log('soloListener - ours', {event})}
 
-    const { data } = event
     const { action, keepLineup=false, pageKey=null, title=null, context=null } = data;
 
     let $page = null
