@@ -121,7 +121,6 @@
   }
 
   let drawing = false
-  // let siminterval = null
   let panSVG = null
   const panZoom = {}
   async function display(chosen) {
@@ -292,9 +291,10 @@ function composite(concepts) {
 
 function dotify(complex) {
   const inputs = ["read", "get", "first"]
+  const safe = string => string.replaceAll(/"/g,'')
 
   const {graph, merged} = complex
-  const tip = props => Object.entries(props).filter(e => e[1]).map(e => `${e[0]}: ${e[1]}`).join("\\n")
+  const tip = props => Object.entries(props).filter(e => e[1]).map(e => `${e[0]}: ${safe(e[1])}`).join("\\n")
 
   const layout = graph.nodes
     .filter(node => node.type == 'Graphviz' && node.props.layout)
@@ -308,7 +308,7 @@ function dotify(complex) {
 
   const nodes = graph.nodes.map((node,id) => {
     const icon = node.props.url ? " 🔗" : node.props.tick ? " ☐" : ""
-    const label = `${node.type}\\n${node.props.name}${icon}`
+    const label = `${node.type}\\n${safe(node.props.name)}${icon}`
     const color = emphasis[node.type] || ''
     return `${id} [label="${label}" ${color} ${(node.props.url||node.props.tick)?`URL="${node.props.url||'#'}" target="_blank"`:''} tooltip="${tip(node.props)}"]`
   })
