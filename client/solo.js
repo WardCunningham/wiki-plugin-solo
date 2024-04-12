@@ -17,10 +17,10 @@
     const sources = items.slice(0,index)
       .filter(item => item.classList.contains('aspect-source'))
       .map(item => {
+        const source = item.closest('.page').id.replaceAll(/-/g,' ')
         const aspects = item.aspectData && item.aspectData() || []
-        return {item,aspects}
+        return {source,aspects}
       })
-    console.log({sources})
     return sources
   }
 
@@ -37,11 +37,12 @@
         graphs.push(...assets())
       } else if (m = line.match(/^LINK (\w+) (https?:\S+.jsonl)$/)) {
         const graph = link(absolute(m[2]))
+          .then(aspects => ({source:m[1],aspects}))
         graphs.push(graph)
         line = `LINK <a href="${absolute(m[2])}" target=_blank>${m[1]} <img src="/images/external-link-ltr-icon.png"></a>`
       } else if (m = line.match(/^LINEUP$/)) {
         const sources = lineup($item)
-        graphs.push(...sources.map(source => source.aspects))
+        graphs.push(...sources)
         line = `LINEUP<br> &nbsp;
           ${sources.length} sources,
           ${sources.map(source => source.aspects.length).toString()||'no'} aspects`
@@ -84,10 +85,7 @@
   }
 
   const dopopup = event => {
-    const graphs = todo.shift()
-    console.log({graphs})
-    todo.push(graphs)
-    const doing = {type:'batch', graphs, pageKey}
+    const doing = {type:'batch', sources:todo, pageKey}
     const popup = window.open('/plugins/solo/dialog/#','solo','popup,height=720,width=1280')
     if (popup.location.pathname != '/plugins/solo/dialog/'){
       console.log('launching new dialog')
