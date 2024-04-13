@@ -9,7 +9,7 @@
     {
       "type": "solo",
       "id": "76568768768678",
-      "text": "LINK Search https://raw.githubusercontent.com/WardCunningham/search/master/README.graph.jsonl"
+      "text": "LINK Search https://raw.githubusercontent.com/WardCunningham/search/master/README.graph.jsonl\nLINK Patterns https://raw.githubusercontent.com/WardCunningham/assets/master/pages/aspects-of-pattern-relations/aspects-of-pattern-relations.jsonl"
     },
     {
       "type": "paragraph",
@@ -41,7 +41,7 @@
           {
             "type": "solo",
             "id": "76568768768678",
-            "text": "LINK Search https://raw.githubusercontent.com/WardCunningham/search/master/README.graph.jsonl"
+            "text": "LINK Search https://raw.githubusercontent.com/WardCunningham/search/master/README.graph.jsonl\nLINK Patterns https://raw.githubusercontent.com/WardCunningham/assets/master/pages/aspects-of-pattern-relations/aspects-of-pattern-relations.jsonl"
           }
         ]
       },

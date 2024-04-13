@@ -43,25 +43,13 @@
     pageKey = data.pageKey
     beam.splice(0)
     for (const source of data.sources){
-      source.date = Date.now()
+      source.aspects.forEach(aspect => aspect.label = source.source)
       beam.push(...source.aspects)}
     console.log({data,beam})
     refreshBeam()
   })
 
   function refreshBeam() {
-    // const now = (new Date).getTime()
-    // const sections = [
-    //   {date: now-1000*60*60*24*365*100, period: 'Years'},
-    //   {date: now-1000*60*60*24*365, period: 'a Year'},
-    //   {date: now-1000*60*60*24*91, period: 'a Season'},
-    //   {date: now-1000*60*60*24*7*31, period: 'a Month'},
-    //   {date: now-1000*60*60*24*7, period: 'a Week'},
-    //   {date: now-1000*60*60*24, period: 'a Day'},
-    //   {date: now-1000*60*60, period: 'an Hour'},
-    //   {date: now-1000*60, period: 'a Minute'},
-    //   {date: now, period: 'Seconds'}
-    // ]
 
     // this.nextdownload = null
     const want = [...window.beamlist.querySelectorAll('input[type=checkbox]:checked')]
@@ -73,14 +61,14 @@
     window.beamlist.innerHTML = names
       .map((n,i) => {
         const poem = beam[i]
-        let sep = ''
+        let sep = i && beam[i-1].label == beam[i].label ? '' : beam[i].label
         // for (const section of sections) {
         //   if (then && poem.date && then<section.date && poem.date>=section.date) {
         //     sep = `<div><font color=gray>Within ${section.period}</font></div>`
         //   }
         // }
         // then = poem.date || 1
-        // const hover = poem.date ? `title="${new Date(poem.date).toLocaleString()}"` : ''
+        const hover = poem.date ? `title="${new Date(poem.date).toLocaleString()}"` : ''
         const number = `<sup>${poem.graph.nodes.length}</sup>`
         return `${sep}<div><font color=gray size=1>${i}</font>
         <input type=checkbox value=${i} id=n${i} ${want.includes(i)?'checked':''}>
@@ -293,10 +281,10 @@ function composite(concepts) {
 
 function dotify(complex) {
   const inputs = ["read", "get", "first"]
-  const safe = string => string.replaceAll(/"/g,'')
+  const safe = string => string.replaceAll ? string.replaceAll(/"/g,'') : string
 
   const {graph, merged} = complex
-  const tip = props => Object.entries(props).filter(e => e[1]).map(e => `${e[0]}: ${safe(e[1])}`).join("\\n")
+  const tip = props => Object.entries(props|{}).filter(e => e[1]).map(e => `${e[0]}: ${safe(e[1])}`).join("\\n")
 
   const layout = graph.nodes
     .filter(node => node.type == 'Graphviz' && node.props.layout)
@@ -383,9 +371,11 @@ function hoverbold(div,select='both') {
 function clickready(div,graph) {
   div.querySelectorAll('.node').forEach(node => {
     node.addEventListener('click', event => {
-      const node = event.target.parentElement.parentElement.parentElement
+      const target = event.target
+      const node = target.parentElement
       const nid = +node.querySelector('title').textContent
       const props = graph.nodes[nid].props
+      console.log({event,target,  node,nid,props})
       if('site' in props) {
         const site = props.site
         const title = props.name.replaceAll(/\n/g,' ')
