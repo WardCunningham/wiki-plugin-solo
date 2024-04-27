@@ -378,7 +378,7 @@ function clickready(div,graph) {
       console.log({event,target,  node,nid,props})
       if('site' in props) {
         const site = props.site
-        const title = props.name.replaceAll(/\n/g,' ')
+        const title = props.title || props.name.replaceAll(/\n/g,' ')
         const message = {
           action: 'doInternalLink',
           keepLineup:event.shiftKey,
