@@ -33,30 +33,60 @@
     let graphs = []
     let output = text.split(/\r?\n/).map (line => {
       var m
+
       if (m = line.match(/^ASSETS$/)) {
-        graphs.push(...assets())
-      } else if (m = line.match(/^LINK (\w+) (https?:\S+.jsonl)$/)) {
+        line = `ASSETS <i onclick=doassets(event) style="cursor:pointer;">continue</i>`
+        graphs.push(new Promise(resolve => {
+          window.doassets = async event => {
+            const want = assets($item)
+            const {site,dir,file} = want[0]
+            const have = await link(`${site}/${dir}/${file}`)
+              .then(aspects => ({source:file,aspects}))
+            console.log({have})
+            event.target.outerHTML = `<br>
+              &nbsp; ${want.length} sources, ${have.aspects.length} aspects`
+            resolve(have)
+          }
+        }))
+      }
+
+      else if (m = line.match(/^LINK (\w+) (https?:\S+.jsonl)$/)) {
         const graph = link(absolute(m[2]))
           .then(aspects => ({source:m[1],aspects}))
         graphs.push(graph)
         line = `LINK <a href="${absolute(m[2])}" target=_blank>${m[1]} <img src="/images/external-link-ltr-icon.png"></a>`
-      } else if (m = line.match(/^LINEUP$/)) {
+      }
+
+      else if (m = line.match(/^LINEUP$/)) {
         const sources = lineup($item)
         graphs.push(...sources)
         line = `LINEUP<br> &nbsp;
           ${sources.length} sources,
           ${sources.map(source => source.aspects.length).toString()||'no'} aspects`
-      } else {
+      }
+
+      else {
         line = `<font color=gray>${expand(line)}</font>`
       }
+
       return line
     }).join('<br>')
     return {output, graphs}
   }
 
-  async function assets() {
-    const schedule = []
-    return schedule
+  function assets($item) {
+    const sources = [...$item.get(0).parentElement.children]
+      .filter(e => e.classList.contains('assets-source'))
+      .map(e => e.assetsData())
+    console.log({sources})
+    const want = sources
+      .map(d1 => Object.entries(d1)
+        .map(([dir,d2]) => Object.entries(d2)
+          .map(([site,d3]) => d3
+            .map(file => ({dir,site,file}) ))))
+      .flat(3)
+    console.log({want})
+    return want
   }
 
   async function link(url) {
