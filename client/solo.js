@@ -83,6 +83,7 @@
       .map(d1 => Object.entries(d1)
         .map(([dir,d2]) => Object.entries(d2)
           .map(([site,d3]) => d3
+            .filter(file => file.endsWith('.jsonl'))
             .map(file => ({dir,site,file}) ))))
       .flat(3)
     console.log({want})
