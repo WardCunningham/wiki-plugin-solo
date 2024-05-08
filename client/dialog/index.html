@@ -42,6 +42,9 @@
     console.log({data})
     pageKey = data.pageKey
     beam.splice(0)
+    window.beamlist.querySelectorAll('input[type=checkbox]:checked')
+      .forEach(elem => elem.checked = false)
+    window.target.innerHTML = ''
     for (const source of data.sources){
       source.aspects.forEach(aspect => aspect.label = source.source)
       beam.push(...source.aspects)}
