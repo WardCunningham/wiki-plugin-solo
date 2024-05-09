@@ -292,10 +292,11 @@ function dotify(complex) {
   const layout = graph.nodes
     .filter(node => node.type == 'Graphviz' && node.props.layout)
     .map(node => node.props.layout)
+    ?.reverse()[0]
   const emphasis = graph.nodes
     .filter(node => node.type == 'Graphviz' && node.props.emphasis)
     .map(node => node.props.emphasis)
-    ?.reverse()[0] || {}
+    .reduce((sum,each) => Object.assign(sum,each), {})
   console.log('dotify',emphasis)
   window.graph = graph
 
@@ -322,7 +323,7 @@ function dotify(complex) {
   return [
     'digraph {',
     'overlap = false; splines=true',
-    `layout = ${layout.reverse()[0]||'dot'};`,
+    `layout = ${layout||'dot'}`,
     'node [shape=box style=filled fillcolor=gold penwidth=2]',
     ...merged.nids,
     'node [fillcolor=palegreen penwidth=1]',
