@@ -21,8 +21,10 @@
     <div style="padding:16px; font-size:large;">More about
       <a href=http://search.dojo.fed.wiki/solo-super-collaborator.html target=_blank>Solo</a>
       <p>
-        <button onclick=dogroup(event)>group</button>
-        <button onclick=dodownload(event)>download</button></p>
+        <button onclick=dogroup(event)>group</button></p>
+      <p>
+        <button onclick=dopreview(event) disabled>preview</button>
+        <button onclick=dodownload(event) disabled>download</button></p>
   </div>
 </main>
 <script type="module">
@@ -53,8 +55,6 @@
   })
 
   function refreshBeam() {
-
-    // this.nextdownload = null
     const want = [...window.beamlist.querySelectorAll('input[type=checkbox]:checked')]
       .map(e => +e.value)
     console.log('refreshBeam',want)
@@ -83,7 +83,6 @@
   }
 
   window.dochoose = function (event) {
-    // croquet.view.nextdownload = null
     const checked = [...window.beam.querySelectorAll('input[type=checkbox]:checked')]
     const chosen = checked.map(e => Object.assign({index:e.value},beam[e.value]))
     console.log({chosen})
@@ -395,6 +394,49 @@ function clickready(div,graph) {
       }
     })
   })
+}
+
+window.dogroup = event => {
+  const s=window.target.getBoundingClientRect();
+  const nids = [...window.target.getElementsByClassName('node')]
+    .filter(node=>{
+      const r=node.getBoundingClientRect();
+      return r.x>s.x && r.x+r.width<s.x+s.width &&
+         r.y>s.y && r.y+r.height<s.y+s.height})
+    .map(node=>+node.querySelector('title').textContent)
+  console.log('nids',...nids)
+  const rids = window.graph.rels
+    .map((rel,i) => nids.includes(rel.from) && nids.includes(rel.to) ? i : null)
+    .filter(rid => rid !== null)
+  console.log('rids',...rids)
+  const nodes = nids.map(nid => {
+    const node = window.graph.nodes[nid]
+    node.in = node.in.map(rid => rids.indexOf(rid)).filter(rid => rid >= 0)
+    node.out = node.out.map(rid => rids.indexOf(rid)).filter(rid => rid >= 0)
+    return node
+  })
+  const rels = rids.map(rid => {
+    const rel = window.graph.rels[rid]
+    rel.from = nids.indexOf(rel.from)
+    rel.to = nids.indexOf(rel.to)
+    return rel
+  })
+  const graph = new Graph(nodes,rels)
+  const name = new Date().toLocaleTimeString()
+  console.log(name,graph)
+  beam.push({name,graph,label:'groups'})
+  refreshBeam()
+}
+
+window.dodownload = event => {
+  const poems = [...window.beamlist.querySelectorAll('input[type=checkbox]:checked')]
+    .map(e => beam[+e.value])
+  const complex = composite(poems)
+  const filename = poems
+    .map(poem => poem.name.replace(/[^a-zA-Z0-9]/g,''))
+    .filter(uniq).sort().join('-') + '.graph.json'
+  console.log({poems,complex,filename})
+  // download(complex.graph.stringify(null,2),filename,'application/json')
 }
 
 </script>
