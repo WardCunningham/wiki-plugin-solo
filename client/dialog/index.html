@@ -20,8 +20,8 @@
   <div id="create" ondrop="drop(event)" ondragover="over(event)" ondragenter="over(event)">
     <div style="padding:16px; font-size:large;">More about
       <a href=http://search.dojo.fed.wiki/solo-super-collaborator.html target=_blank>Solo</a>
-      <p>
-        <button onclick=dogroup(event)>group</button></p>
+      <p><button onclick=dogroup(event)>group</button></p>
+      <p><input id=search type=text placeholder="Search"></p>
       <p>
         <button onclick=dopreview(event) disabled>preview</button>
         <button onclick=dodownload(event) disabled>download</button></p>
@@ -53,6 +53,26 @@
     console.log({data,beam})
     refreshBeam()
   })
+
+
+  document.getElementById('search')
+    .addEventListener('keydown', event => {
+      if (event.keyCode === 13) {
+        event.preventDefault()
+        event.target.value = ''
+      } else {
+        const term = (event.target.value+event.key).toLowerCase()
+        const want = text => text?.toLowerCase().includes(term)
+        const nodes = beam
+          .map(aspect => aspect.graph.nodes)
+          .flat()
+          .filter(node => want(node.type) || want(node.props.name))
+        console.log({term,nodes})
+        recommend(nodes)
+
+      }
+    })
+
 
   function refreshBeam() {
     const want = [...window.beamlist.querySelectorAll('input[type=checkbox]:checked')]
@@ -87,16 +107,14 @@
     const chosen = checked.map(e => Object.assign({index:e.value},beam[e.value]))
     console.log({chosen})
     display(chosen)
-    recommend(chosen)
+    recommend(chosen.map(poem => poem.graph.nodes).flat())
   }
 
-  function recommend(chosen) {
+  function recommend(like) {
     const vocabulary = new Set()
     const hash = node => `${node.type}: ${node.props.name || ''}`
-    for (const poem of chosen) {
-      for (const node of poem.graph.nodes) {
-        vocabulary.add(hash(node))
-      }
+    for (const node of like) {
+      vocabulary.add(hash(node))
     }
     const similar = graph => {
       for (const node of graph.nodes) {
@@ -338,7 +356,6 @@ function hoverbold(div,select='both') {
   const title = target => target.querySelector('title').textContent.replace(/\\n/g,' ')
   div.querySelectorAll('.edge').forEach(edge => rels.push([edge, ...title(edge).split('->')]))
   const trace = (node,doit) => {
-    console.log()
     const related = io => rels.filter(row => row[io]==node)
     switch (select) {
       case 'output':
@@ -378,7 +395,10 @@ function clickready(div,graph) {
       const node = target.parentElement
       const nid = +node.querySelector('title').textContent
       const props = graph.nodes[nid].props
-      console.log({event,target,  node,nid,props})
+      console.log({event,target,node,nid,props})
+      if (event.altKey) {
+        recommend([graph.nodes[nid]])
+      } else
       if('site' in props) {
         const site = props.site
         const title = props.title || props.name.replaceAll(/\n/g,' ')
