@@ -187,7 +187,7 @@
         wiki.doInternalLink(title, $page)
         break
       case 'showResult':
-        options = keepLineup ? {} : {$page}
+        const options = keepLineup ? {} : {$page}
         wiki.showResult(wiki.newPage(page), options)
         break
       default:
