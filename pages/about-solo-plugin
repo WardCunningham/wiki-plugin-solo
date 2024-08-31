@@ -25,6 +25,16 @@
       "type": "markdown",
       "id": "6c83afc50af3d7c9",
       "text": "Say __LINEUP__ to read aspect sources above and to the left in the lineup. See [[Solo Lineup Browser]]"
+    },
+    {
+      "type": "markdown",
+      "id": "9c700d75d562efda",
+      "text": "Say __ASSETS__ to find aspects in Asset folders on the same page saved as Graph objects in \".jsonl\" files."
+    },
+    {
+      "type": "markdown",
+      "id": "ca2e49845e7cce79",
+      "text": "Say __INCLUDED__ to find aspects enriching the Solo item in the page json with an \"aspects\" property."
     }
   ],
   "journal": [
@@ -178,6 +188,76 @@
         "text": "Say __LINEUP__ to read aspect sources above and to the left in the lineup. See [[Solo Lineup Browser]]"
       },
       "date": 1710906419530
+    },
+    {
+      "item": {
+        "type": "factory",
+        "id": "9c700d75d562efda"
+      },
+      "id": "9c700d75d562efda",
+      "type": "add",
+      "after": "6c83afc50af3d7c9",
+      "date": 1725143312938
+    },
+    {
+      "type": "edit",
+      "id": "9c700d75d562efda",
+      "item": {
+        "type": "markdown",
+        "id": "9c700d75d562efda",
+        "text": "Say **ASSETS** to file aspects in Asset folders saved as Graph objects in \".jsonl\" files."
+      },
+      "date": 1725143424762
+    },
+    {
+      "type": "edit",
+      "id": "9c700d75d562efda",
+      "item": {
+        "type": "markdown",
+        "id": "9c700d75d562efda",
+        "text": "Say __ASSETS__ to file aspects in Asset folders saved as Graph objects in \".jsonl\" files."
+      },
+      "date": 1725143454478
+    },
+    {
+      "type": "edit",
+      "id": "9c700d75d562efda",
+      "item": {
+        "type": "markdown",
+        "id": "9c700d75d562efda",
+        "text": "Say __ASSETS__ to file aspects in Asset folders on the same page saved as Graph objects in \".jsonl\" files."
+      },
+      "date": 1725143573260
+    },
+    {
+      "item": {
+        "type": "factory",
+        "id": "ca2e49845e7cce79"
+      },
+      "id": "ca2e49845e7cce79",
+      "type": "add",
+      "after": "9c700d75d562efda",
+      "date": 1725143575940
+    },
+    {
+      "type": "edit",
+      "id": "ca2e49845e7cce79",
+      "item": {
+        "type": "markdown",
+        "id": "ca2e49845e7cce79",
+        "text": "Say __INCLUDED__ to find aspects enriching the Solo item in the page json with an \"aspects\" property."
+      },
+      "date": 1725143720594
+    },
+    {
+      "type": "edit",
+      "id": "9c700d75d562efda",
+      "item": {
+        "type": "markdown",
+        "id": "9c700d75d562efda",
+        "text": "Say __ASSETS__ to find aspects in Asset folders on the same page saved as Graph objects in \".jsonl\" files."
+      },
+      "date": 1725143748827
     }
   ]
 }

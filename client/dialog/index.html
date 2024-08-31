@@ -20,11 +20,11 @@
   <div id="create" ondrop="drop(event)" ondragover="over(event)" ondragenter="over(event)">
     <div style="padding:16px; font-size:large;">More about
       <a href=http://search.dojo.fed.wiki/solo-super-collaborator.html target=_blank>Solo</a>
-      <p><button onclick=dogroup(event)>group</button></p>
-      <p><input id=search type=text placeholder="Search"></p>
       <p>
-        <button onclick=dopreview(event) disabled>preview</button>
-        <button onclick=dodownload(event) disabled>download</button></p>
+        <button onclick=dogroup(event)>group</button>
+        <button onclick=dopreview(event)>preview</button>
+      </p>
+      <p><input id=search type=text placeholder="Search"></p>
   </div>
 </main>
 <script type="module">
@@ -446,6 +446,26 @@ window.dogroup = event => {
   console.log(name,graph)
   beam.push({name,graph,label:'groups'})
   refreshBeam()
+}
+
+window.dopreview = event => {
+  const aspects = [...window.beamlist.querySelectorAll('input[type=checkbox]:checked')]
+    .map(e => beam[+e.value])
+  console.log(aspects)
+  const title = 'New Aspects for Solo'
+  const story = [
+    {type:'paragraph',text:'This page saved from previous page in wiki.'},
+    {type:'solo',text:'INCLUDED',aspects}]
+  const page = {title,story}
+  const message = {
+    action: 'showResult',
+    keepLineup:event.shiftKey,
+    pageKey,
+    page
+  }
+  console.log(message)
+  window.opener.postMessage(message)
+
 }
 
 window.dodownload = event => {

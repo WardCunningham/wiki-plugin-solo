@@ -29,7 +29,7 @@
     return url.replace(/^(https?:)\/([^\/])/,`$1//${location.host}/$2`)
   }
 
-  function parse($item, text) {
+  function parse($item, {text,aspects=[]}) {
     let graphs = []
     let output = text.split(/\r?\n/).map (line => {
       var m
@@ -65,12 +65,19 @@
           ${sources.map(source => source.aspects.length).toString()||'no'} aspects`
       }
 
+      else if (m = line.match(/^INCLUDED$/)) {
+        graphs.push({source:'included',aspects})
+        line = `INCLUDED<br> &nbsp;
+          ${aspects.length} aspects`
+      }
+
       else {
         line = `<font color=gray>${expand(line)}</font>`
       }
 
       return line
     }).join('<br>')
+    console.log({graphs})
     return {output, graphs}
   }
 
@@ -102,13 +109,21 @@
   let pageKey
   async function emit($item, item) {
     pageKey = $item.parents('.page').data('key')
-    parsed = parse($item, item.text)
+    parsed = parse($item, item)
     $item.append(`
       <div style="background-color:#eee;padding:15px;">
         <p>${parsed.output}</p>
       </div>`)
     todo = await Promise.all(parsed.graphs)
     console.log({todo})
+    const included = todo
+      .filter(source => source.source == 'included')
+      .map(source => source.aspects)
+      .flat()
+    if (included.length) {
+      $item.addClass('aspect-source')
+      $item.get(0).aspectData = () => included
+    }
     $item.find('div').append(`
       <p><button onclick="window.plugins.solo.dopopup(event)">
         view in solo
@@ -159,7 +174,7 @@
     }
     if (wiki.debug) {console.log('soloListener - ours', {event})}
 
-    const { action, keepLineup=false, pageKey=null, title=null, context=null } = data;
+    const { action, keepLineup=false, pageKey=null, title=null, context=null, page=null} = data;
 
     let $page = null
     if (pageKey != null) {
@@ -170,6 +185,10 @@
       case 'doInternalLink':
         wiki.pageHandler.context = context
         wiki.doInternalLink(title, $page)
+        break
+      case 'showResult':
+        options = keepLineup ? {} : {$page}
+        wiki.showResult(wiki.newPage(page), options)
         break
       default:
         console.error({ where:'soloListener', message: "unknown action", data })
