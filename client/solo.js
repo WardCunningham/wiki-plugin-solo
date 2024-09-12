@@ -65,9 +65,10 @@
           ${sources.map(source => source.aspects.length).toString()||'no'} aspects`
       }
 
-      else if (m = line.match(/^INCLUDED$/)) {
-        graphs.push({source:'included',aspects})
-        line = `INCLUDED<br> &nbsp;
+      else if (m = line.match(/^INCLUDED(.*)$/)) {
+        const source = m[1].trim() || 'included'
+        graphs.push({source,aspects})
+        line = `INCLUDED${m[1]}<br> &nbsp;
           ${aspects.length} aspects`
       }
 
