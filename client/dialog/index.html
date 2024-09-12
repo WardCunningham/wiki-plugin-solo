@@ -455,6 +455,7 @@ window.dopreview = event => {
   const title = 'New Aspects for Solo'
   const story = [
     {type:'paragraph',text:'This page saved from previous page in wiki.'},
+    {type:'graphviz',text:window.dot},
     {type:'solo',text:'INCLUDED',aspects}]
   const page = {title,story}
   const message = {
