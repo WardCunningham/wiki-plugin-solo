@@ -457,7 +457,12 @@ window.dopreview = event => {
     {type:'paragraph',text:'This page saved from previous page in wiki.'},
     {type:'graphviz',text:window.dot},
     {type:'solo',text:'INCLUDED',aspects}]
+
   const page = {title,story}
+  const date = Date.now()
+  const asCopy = obj => JSON.parse(JSON.stringify(obj))
+  for (const item of page.story) item.id ||= (Math.random()*10**20).toFixed(0)
+  page.journal ||= [{type:'create', date, item:asCopy(page)}]
   const message = {
     action: 'showResult',
     keepLineup:event.shiftKey,
