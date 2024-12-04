@@ -302,9 +302,17 @@ function composite(concepts) {
 function dotify(complex) {
   const inputs = ["read", "get", "first"]
   const safe = string => string.replaceAll ? string.replaceAll(/"/g,'') : string
+  const epoch = number => number.toString().match(/^\d{13}$/) ?
+    new Date(number).toLocaleDateString() :
+      number.toString().match(/\n/) ?
+        number.replaceAll(/\n/g,' ') :
+        number
 
   const {graph, merged} = complex
-  const tip = props => Object.entries(props|{}).filter(e => e[1]).map(e => `${e[0]}: ${safe(e[1])}`).join("\\n")
+  const tip = props => Object.entries(props||{})
+    .filter(e => e[1])
+    .map(e => `${e[0]}: ${safe(epoch(e[1]))}`)
+    .join("\\n")
 
   const layout = graph.nodes
     .filter(node => node.type == 'Graphviz' && node.props.layout)
@@ -392,7 +400,7 @@ function clickready(div,graph) {
   div.querySelectorAll('.node').forEach(node => {
     node.addEventListener('click', event => {
       const target = event.target
-      const node = target.parentElement
+      const node = target.closest('.node')
       const nid = +node.querySelector('title').textContent
       const props = graph.nodes[nid].props
       console.log({event,target,node,nid,props})
