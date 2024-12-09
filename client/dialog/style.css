@@ -31,6 +31,7 @@ main {
   scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: #ccc #eee;
+  resize:horizontal;
 }
 
 #create {
