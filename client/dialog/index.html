@@ -23,6 +23,7 @@
       <p>
         <button onclick=dogroup(event)>group</button>
         <button onclick=dopreview(event)>preview</button>
+        <button onclick=dobridge(event)>bridge</button>
       </p>
       <p><input id=search type=text placeholder="Search"></p>
   </div>
@@ -122,11 +123,46 @@
       }
       return null
     }
+    showwhen(similar)
+  }
+
+  window.dobridge = event => {
+    const checked = [...window.beam.querySelectorAll('input[type=checkbox]:checked')]
+    const chosen = checked.map(e => Object.assign({index:e.value},beam[e.value]))
+    bridge(chosen)
+  }
+
+  function bridge(chosen) {
+    // for every unselected aspect
+    //   for every selected aspect
+    //     if first match remember
+    //     if second match recommend unselected
+
+    const hash = node => `${node.type}: ${node.props.name || ''}`
+    const touch = ((a,b) => {
+      for (const anode of a.nodes)
+        for (const bnode of b.nodes)
+          if(hash(anode) == hash(bnode)) return true
+      return false
+    })
+    const wanted = unselected => {
+      let any = false
+      for (const selected of chosen) {
+        if (touch(unselected, selected.graph)) {
+          if (any) return true
+          any = true
+        }
+      }
+    }
+    showwhen(wanted)
+  }
+
+  function showwhen(predicate) {
     window.beam.querySelectorAll('input[type=checkbox]').forEach(elem => {
-      const color = !elem.checked && similar(beam[elem.value].graph) ? 'darkorange' : 'black'
+      const color = !elem.checked && predicate(beam[elem.value].graph) ? 'darkorange' : 'black'
       elem.nextElementSibling.style.color = color
-      const title = !elem.checked && similar(beam[elem.value].graph) ? JSON.stringify(similar(beam[elem.value].graph)) : ''
-      elem.nextElementSibling.setAttribute('title', title)
+      // const title = !elem.checked && predicate(beam[elem.value].graph) ? JSON.stringify(similar(beam[elem.value].graph)) : ''
+      // elem.nextElementSibling.setAttribute('title', title)
     })
   }
 
@@ -328,7 +364,7 @@ function dotify(complex) {
   const nodes = graph.nodes.map((node,id) => {
     const icon = node.props.url ? " 🔗" : node.props.tick ? " ☐" : ""
     const label = `${node.type}\\n${safe(node.props.name)}${icon}`
-    const color = emphasis[node.type] || (node.props.color ? `fillcolor="#${node.props.color}"` : '')
+    const color = emphasis[node.type] || (node.props.color ? `fillcolor="${node.props.color}"` : '')
     return `${id} [label="${label}" ${color} ${(node.props.url||node.props.tick)?`URL="${node.props.url||'#'}" target="_blank"`:''} tooltip="${tip(node.props)}"]`
   })
 

@@ -19,7 +19,7 @@ main {
   grid-template-areas:
     "beam   target"
     "create target";
-  grid-template-columns: 1fr 5fr;
+  grid-template-columns: 1fr 4fr;
   grid-template-rows: 3fr 1fr;
   gap: 0px;
 }
