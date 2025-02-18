@@ -411,13 +411,20 @@ function dotify(complex) {
       //   file.puts "#{r['from']} -> #{r['to']} [#{props}]"
       // end
 
+  const omits = new Set()
   const edges = graph.rels.map(rel => {
     const color = emphasis[rel.type] || ''
+    if (graph.rels.find(rev => rev.from==rel.to && rev.to==rel.from)) {
+      if (omits.has(`${rel.to} -> ${rel.from}`)) return ''
+      omits.add(`${rel.from} -> ${rel.to}`)
+      return `${rel.from}->${rel.to} [label="${rel.type}" ${color} labeltooltip="${tip(rel.props)}" dir=both]`
+    }
     if (inputs.includes(rel.type))
       return `${rel.to}->${rel.from} [label="${rel.type}" ${color} labeltooltip="${tip(rel.props)}" dir=back]`
     else
       return `${rel.from}->${rel.to} [label="${rel.type}" ${color} labeltooltip="${tip(rel.props)}"]`
   })
+
   return [
     'strict digraph {',
     'overlap = false; splines=true',
