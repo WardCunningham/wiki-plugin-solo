@@ -129,10 +129,13 @@
   window.dobridge = event => {
     const checked = [...window.beam.querySelectorAll('input[type=checkbox]:checked')]
     const chosen = checked.map(e => Object.assign({index:e.value},beam[e.value]))
-    bridge(chosen)
+    const complex = composite(chosen)
+    const parts = partitions(complex.graph)
+    bridge(parts)
+
   }
 
-  function bridge(chosen) {
+  function bridge(graphs) {
     // for every unselected aspect
     //   for every selected aspect
     //     if first match remember
@@ -147,8 +150,8 @@
     })
     const wanted = unselected => {
       let any = false
-      for (const selected of chosen) {
-        if (touch(unselected, selected.graph)) {
+      for (const selected of graphs) {
+        if (touch(unselected, selected)) {
           if (any) return true
           any = true
         }
@@ -270,6 +273,40 @@ class Graph {
   }
 }
 
+function partitions(graph) {
+  const input = graph
+  const output = [] // graphs
+  let doing = {}    // nid => new nid
+  const nodes = input.nodes
+  const rels = input.rels
+  const todo = [...Array(nodes.length).keys()]
+    .map(n => [n,Math.random()])
+    .sort((a,b)=>a[1]-b[1])
+    .map(v=>v[0])
+
+  const copy = nid => {
+    if(nid in doing) return
+    todo.splice(todo.indexOf(nid),1)
+    const node = nodes[nid]
+    doing[nid] = output[0].addNode(node.type,node.props)
+    for (const rid of node.out) copy(rels[rid].to)
+    for (const rid of node.in) copy(rels[rid].from)
+    for (const rid of node.out) output[0].addRel('',doing[nid],doing[rels[rid].to],{})
+  }
+
+  while(todo.length) {
+    const nid = todo.shift()
+    if (nid in doing) continue
+    const node = nodes[nid]
+    if (node.in.length + node.out.length) {
+      output.unshift(new Graph())
+      doing = {}
+      copy(nid)
+    }
+  }
+  return output
+}
+
 
 function composite(concepts) {
   const merged = {nids:[]}
@@ -382,7 +419,7 @@ function dotify(complex) {
       return `${rel.from}->${rel.to} [label="${rel.type}" ${color} labeltooltip="${tip(rel.props)}"]`
   })
   return [
-    'digraph {',
+    'strict digraph {',
     'overlap = false; splines=true',
     `layout = ${layout||'dot'}`,
     'node [shape=box style=filled fillcolor=gold penwidth=2]',

@@ -4,6 +4,7 @@
 (function() {
   const solo = require('../client/solo'),
         expect = require('expect.js')
+  const {describe,it} = require('node:test')
 
   describe('solo plugin', () => {
     describe('expand', () => {
