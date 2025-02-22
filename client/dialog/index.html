@@ -24,6 +24,7 @@
         <button onclick=dogroup(event)>group</button>
         <button onclick=dopreview(event)>preview</button>
         <button onclick=dobridge(event)>bridge</button>
+        <!-- <button onclick=oldbridge(event)>old</button> -->
       </p>
       <p><input id=search type=text placeholder="Search"></p>
   </div>
@@ -132,7 +133,13 @@
     const complex = composite(chosen)
     const parts = partitions(complex.graph)
     bridge(parts)
+  }
 
+  window.oldbridge = event => {
+    const checked = [...window.beam.querySelectorAll('input[type=checkbox]:checked')]
+    const chosen = checked.map(e => Object.assign({index:e.value},beam[e.value]))
+    const parts = chosen.map(choice => choice.graph)
+    bridge(parts)
   }
 
   function bridge(graphs) {
