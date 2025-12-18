@@ -4,8 +4,8 @@ This plugin, type: solo, extends the markup of the federated wiki.
 
 ## Build
 
-    npm install
-    grunt build
+`npm install`
+`npm run build`
 
 ## License
 

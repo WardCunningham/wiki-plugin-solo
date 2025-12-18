@@ -1,3 +1,10 @@
+assets
+client/solo.js
+client/solo.map
+commons
+coverage
 node_modules
 npm-debug.log
+meta-client.json
+recycle
 status

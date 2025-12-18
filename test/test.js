@@ -1,18 +1,12 @@
-// build time tests for solo plugin
-// see http://mochajs.org/
+import { solo } from '../src/client/solo.js'
+import { suite, test } from 'node:test'
+import assert from 'node:assert'
 
-(function() {
-  const solo = require('../client/solo'),
-        expect = require('expect.js')
-  const {describe,it} = require('node:test')
-
-  describe('solo plugin', () => {
-    describe('expand', () => {
-      it('can make itallic', () => {
-        var result = solo.expand('hello *world*')
-        return expect(result).to.be('hello <i>world</i>')
-      })
+suite('solo plugin', () => {
+  suite('expand', () => {
+    test('can escape html markup characters', () => {
+      const result = solo.expand('try < & >')
+      assert.equal(result, 'try &lt; &amp; &gt;')
     })
   })
-
-}).call(this)
+})

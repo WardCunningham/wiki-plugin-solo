@@ -1,5 +1,4 @@
 
-(function() {
 
   const delay = time => new Promise(res => setTimeout(res,time));
 
@@ -210,8 +209,4 @@
     window.plugins.solo = {emit, bind, dopopup}
   }
 
-  if (typeof module !== "undefined" && module !== null) {
-    module.exports = {expand}
-  }
-
-}).call(this)
+  export const solo = typeof window == 'undefined' ? {expand} : undefined
