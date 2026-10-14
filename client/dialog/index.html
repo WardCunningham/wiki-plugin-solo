@@ -24,16 +24,14 @@
         <button onclick=dogroup(event)>group</button>
         <button onclick=dopreview(event)>preview</button>
         <button onclick=dobridge(event)>bridge</button>
-        <!-- <button onclick=oldbridge(event)>old</button> -->
       </p>
       <p><input id=search type=text placeholder="Search"></p>
   </div>
 </main>
 <script type="module">
+  import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
   const beam = []
   let pageKey
-
-  // window.postMessage({type:'batch',graphs:(await want('wards-favorites')).slice(0,15)})
 
   window.want = async file =>
     fetch(`http://found.ward.fed.wiki/assets/pages/aspects-of-recent-changes/${file}.jsonl`)
@@ -55,7 +53,6 @@
     console.log({data,beam})
     refreshBeam()
   })
-
 
   document.getElementById('search')
     .addEventListener('keydown', event => {
@@ -197,6 +194,42 @@
         hpccWasm.graphviz.layout(window.dot, "svg", "dot").then(svg => {
           target.innerHTML = svg;
           drawing = false
+
+          const pane = document.querySelector("svg #graph0");
+          const arrow = `<defs>
+              <marker
+                id="arrow"
+                viewBox="0 0 10 10"
+                refX="5"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                fill=red
+                fill-opacity="1.0"
+                orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" />
+              </marker>
+            </defs>`
+          pane.insertAdjacentHTML("beforeend", arrow);
+          const trails = chosen.filter(aspect =>
+            aspect.graph.rels.find(rel =>
+              rel.type=="Trail"))
+          for(const trail of trails) {
+            const want = trail.graph.nodes.map(node => node.props.name).flat()
+            const have = node => [...node.querySelectorAll('text')].map(text => text.textContent).join('\n')
+            const center = box => [box.x+box.width/2, box.y+box.height/2]
+            const nodes = [...pane.querySelectorAll('.node')]
+            const points = want.map(title => {
+              const node = nodes.find(node => have(node) == title)
+              return center(node.getBBox())
+            })
+            console.log({want, points})
+            const lineGenerator = d3.line().curve(d3.curveNatural);
+            const pathData = lineGenerator(points);
+            let rawSvgString = `<path id=trail d="${pathData}" style="fill:none;stroke:red;stroke-width:5;" stroke-opacity="1.0" marker-end="url(#arrow)"/>`
+            pane.insertAdjacentHTML("beforeend", rawSvgString);
+          }
+
           hoverbold(target)
           clickready(target,complex.graph)
           const targetBounds = { width: document.querySelector('#target').clientWidth, height: document.querySelector('#target').clientHeight }
@@ -412,15 +445,9 @@ function dotify(complex) {
     const color = emphasis[node.type] || (node.props.color ? `fillcolor="${node.props.color}"` : '')
     return `${id} [label="${label}" ${color} ${(node.props.url||node.props.tick)?`URL="${node.props.url||'#'}" target="_blank"`:''} tooltip="${tip(node.props)}"]`
   })
-
-      // if inputs.include?r['type']
-      //   file.puts "#{r['to']} -> #{r['from']} [#{props} dir=back]"
-      // else
-      //   file.puts "#{r['from']} -> #{r['to']} [#{props}]"
-      // end
-
   const omits = new Set()
   const edges = graph.rels.map(rel => {
+    if(rel.type == 'Trail') return null
     const color = emphasis[rel.type] || ''
     if (graph.rels.find(rev => rev.from==rel.to && rev.to==rel.from)) {
       if (omits.has(`${rel.to} -> ${rel.from}`)) return ''
@@ -432,6 +459,7 @@ function dotify(complex) {
     else
       return `${rel.from}->${rel.to} [label="${rel.type}" ${color} labeltooltip="${tip(rel.props)}"]`
   })
+  .filter(each => each)
 
   return [
     'strict digraph {',
@@ -494,6 +522,14 @@ function clickready(div,graph) {
       console.log({event,target,node,nid,props})
       if (event.altKey) {
         recommend([graph.nodes[nid]])
+        const message = {
+          action: 'publishSourceData',
+          topic: 'node',
+          title: props.title || props.name.replaceAll(/\n/g,' ')
+        }
+        console.log(message)
+        window.opener.postMessage(message)
+
       } else
       if('site' in props) {
         const site = props.site
@@ -547,7 +583,6 @@ window.dogroup = event => {
 window.dopreview = event => {
   const aspects = [...window.beamlist.querySelectorAll('input[type=checkbox]:checked')]
     .map(e => beam[+e.value])
-  console.log(aspects)
   const title = 'New Aspects for Solo'
   const story = [
     {type:'paragraph',text:'This page saved from previous page in wiki.'},
