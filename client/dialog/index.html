@@ -178,8 +178,8 @@
     specialclicks = addtrail
   }
 
-  function addtrail({props}) {
-    const nid = specialgraph.addNode('',props)
+  function addtrail({type,props}) {
+    const nid = specialgraph.addNode(type,props)
     if(nid > 0) specialgraph.addRel('Trail',nid-1,nid,{})
     refreshBeam()
     window.dochoose(null)
@@ -192,6 +192,14 @@
       // const title = !elem.checked && predicate(beam[elem.value].graph) ? JSON.stringify(similar(beam[elem.value].graph)) : ''
       // elem.nextElementSibling.setAttribute('title', title)
     })
+  }
+
+  const safe = string => string.replaceAll ? string.replaceAll(/"/g,'') : string
+
+  function dotlabel(node) {
+    const icon = node.props.url ? " 🔗" : node.props.tick ? " ☐" : ""
+    const type = node.type ? `${node.type}\n` : ''
+    return `${type}${safe(node.props.name)}${icon}`
   }
 
   let drawing = false
@@ -236,15 +244,14 @@
             aspect.graph.rels.find(rel =>
               rel.type=="Trail"))
           for(const trail of trails) {
-            const want = trail.graph.nodes.map(node => node.props.name).flat()
             const have = node => [...node.querySelectorAll('text')].map(text => text.textContent).join('\n')
             const center = box => [box.x+box.width/2, box.y+box.height/2]
             const nodes = [...pane.querySelectorAll('.node')]
-            const points = want.map(title => {
-              const node = nodes.find(node => have(node) == title)
+            const points = trail.graph.nodes.map(want => {
+              const label = dotlabel(want)
+              const node = nodes.find(node => have(node) == label)
               return center(node.getBBox())
             })
-            console.log({want, points})
             const lineGenerator = d3.line().curve(d3.curveNatural);
             const pathData = lineGenerator(points);
             let rawSvgString = `<path id=trail d="${pathData}" style="fill:none;stroke:red;stroke-width:5;" stroke-opacity="1.0" marker-end="url(#arrow)"/>`
@@ -435,7 +442,6 @@ function composite(concepts) {
 
 function dotify(complex) {
   const inputs = ["read", "get", "first"]
-  const safe = string => string.replaceAll ? string.replaceAll(/"/g,'') : string
   const epoch = number => number.toString().match(/^\d{13}$/) ?
     new Date(number).toLocaleDateString() :
       number.toString().match(/\n/) ?
@@ -462,9 +468,9 @@ function dotify(complex) {
   const nodes = graph.nodes.map((node,id) => {
     const icon = node.props.url ? " 🔗" : node.props.tick ? " ☐" : ""
     const type = node.type ? `${node.type}\\n` : ''
-    const label = `${type}${safe(node.props.name)}${icon}`
-    const color = emphasis[node.type] || (node.props.color ? `fillcolor="${node.props.color}"` : '')
-    return `${id} [label="${label}" ${color} ${(node.props.url||node.props.tick)?`URL="${node.props.url||'#'}" target="_blank"`:''} tooltip="${tip(node.props)}"]`
+    const highlight = merged.nids.includes(id) ? 'shape=box style=filled fillcolor=gold penwidth=2' : ''
+    const color = emphasis[node.type] || (node.props.color ? `fillcolor="${node.props.color}"` : highlight)
+    return `${id} [label="${dotlabel(node)}" ${color} ${(node.props.url||node.props.tick)?`URL="${node.props.url||'#'}" target="_blank"`:''} tooltip="${tip(node.props)}"]`
   })
   const omits = new Set()
   const edges = graph.rels.map(rel => {
@@ -486,9 +492,7 @@ function dotify(complex) {
     'strict digraph {',
     'overlap = false; splines=true',
     `layout = ${layout||'dot'}`,
-    'node [shape=box style=filled fillcolor=gold penwidth=2]',
-    ...merged.nids,
-    'node [fillcolor=palegreen penwidth=1]',
+    'node [shape=box style=filled fillcolor=palegreen penwidth=1]',
     ...nodes,
     ...edges,
     '}'].join("\n")
@@ -540,6 +544,7 @@ function clickready(div,graph) {
       const node = target.closest('.node')
       const nid = +node.querySelector('title').textContent
       const props = graph.nodes[nid].props
+      const type = graph.nodes[nid].type
       console.log({event,target,node,nid,props})
       if (event.altKey) {
         recommend([graph.nodes[nid]])
@@ -552,7 +557,7 @@ function clickready(div,graph) {
         window.opener.postMessage(message)
 
       } else if(specialclicks) {
-        specialclicks({target,node,props})
+        specialclicks({target,node,type,props})
       } else
       if('site' in props) {
         const site = props.site
