@@ -24,7 +24,7 @@
         <button onclick=dogroup(event)>group</button>
         <button onclick=dopreview(event)>preview</button>
         <button onclick=dobridge(event)>bridge</button>
-        <button onclick=dotrail(event)>trail</button>
+        <button id=trail onclick=dotrail(event)>trail</button>
       </p>
       <p><input id=search type=text placeholder="Search"></p>
   </div>
@@ -34,6 +34,10 @@
   const beam = []
   let pageKey
 
+  let specialclicks = null
+  let specialgraph = null
+
+
   window.want = async file =>
     fetch(`http://found.ward.fed.wiki/assets/pages/aspects-of-recent-changes/${file}.jsonl`)
     .then(res => res.text())
@@ -41,6 +45,9 @@
       .map(line => JSON.parse(line)))
 
   window.addEventListener("message",event => {
+    specialclicks = null
+    specialgraph = null
+    document.querySelector('#trail').innerText = 'trail'
     const data = event.data
     console.log({data})
     pageKey = data.pageKey
@@ -74,9 +81,10 @@
     })
 
 
-  function refreshBeam() {
+  function refreshBeam(added=null) {
     const want = [...window.beamlist.querySelectorAll('input[type=checkbox]:checked')]
       .map(e => +e.value)
+    if(added!=null) want.push(added)
     console.log('refreshBeam',want)
     // if (!want.length) window.dochoose({})
     const names = beam.map(poem => poem.name || poem.graph.nodes[0].type)
@@ -165,20 +173,26 @@
     showwhen(wanted)
   }
 
-  let specialclicks = null
-  let specialgraph = null
-
   window.dotrail = event => {
     // inspired by window.dogroup
+    if(specialclicks) {
+      event.target.innerText = 'trail'
+      specialgraph = null
+      specialclicks=null
+      return
+    }
+    event.target.innerText = 'end'
     const graph = new Graph()
     const name = new Date().toLocaleTimeString()
     beam.push({name,graph,label:'trails'})
-    refreshBeam()
+    refreshBeam(beam.length-1)
     specialgraph = graph
     specialclicks = addtrail
   }
 
   function addtrail({type,props}) {
+    let prev = specialgraph.nodes.slice(-1).pop()
+    if(prev && prev.type == type && prev.props == props) return
     const nid = specialgraph.addNode(type,props)
     if(nid > 0) specialgraph.addRel('Trail',nid-1,nid,{})
     refreshBeam()
